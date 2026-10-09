@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Crônicas da Lua</title>
+    <meta
+      name="description"
+      content="Tela inicial de Crônicas da Lua para entrar em uma sala de RPG narrativo."
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="screen active login-screen" id="loginScreen" aria-label="Tela inicial do jogo">
+        <div class="login-card">
+          <div class="brand-block">
+            <p class="brand-kicker">Crônicas da Lua</p>
+            <h1>Crônicas da Lua</h1>
+            <p class="subtitle">RPG narrativo em grupo</p>
+          </div>
+
+          <form id="loginForm" class="login-form">
+            <label class="field">
+              <span>Código da sala</span>
+              <input
+                id="roomCode"
+                type="text"
+                name="roomCode"
+                placeholder="A7K9"
+                maxlength="6"
+                autocomplete="off"
+              />
+            </label>
+
+            <label class="field">
+              <span>Seu nome</span>
+              <input
+                id="playerName"
+                type="text"
+                name="playerName"
+                placeholder="Rafael"
+                autocomplete="off"
+              />
+            </label>
+
+            <button type="submit" class="primary-button">Entrar na Sala</button>
+            <button type="button" class="secondary-button" id="createRoomButton">
+              Criar nova sala
+            </button>
+            <button type="button" class="secondary-button" id="enterMasterButton">
+              Entrar como mestre
+            </button>
+          </form>
+        </div>
+      </section>
+
+      <section class="screen create-room-screen" id="createRoomScreen" aria-label="Tela de criação de sala">
+        <div class="login-card">
+          <div class="brand-block">
+            <p class="brand-kicker">Nova aventura</p>
+            <h2>Criar Nova Sala</h2>
+          </div>
+
+          <form id="createRoomForm" class="login-form">
+            <label class="field">
+              <span>Nome da sala</span>
+              <input
+                id="roomName"
+                type="text"
+                name="roomName"
+                placeholder="Sala do Pântano"
+                autocomplete="off"
+              />
+            </label>
+
+            <label class="field">
+              <span>Seu nome</span>
+              <input
+                id="hostName"
+                type="text"
+                name="hostName"
+                placeholder="Rafael"
+                autocomplete="off"
+              />
+            </label>
+
+            <label class="field">
+              <span>Máx. jogadores</span>
+              <select id="maxPlayers" name="maxPlayers">
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+              </select>
+            </label>
+
+            <label class="field">
+              <span>Sistema de dado</span>
+              <select id="diceSystem" name="diceSystem">
+                <option value="d20" selected>d20</option>
+              </select>
+            </label>
+
+            <fieldset class="option-group">
+              <legend>Votação</legend>
+              <label class="radio-option">
+                <input type="radio" name="voteSystem" value="Maioria simples" checked />
+                <span>Maioria simples</span>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="voteSystem" value="Unânime" />
+                <span>Unânime</span>
+              </label>
+            </fieldset>
+
+            <fieldset class="option-group">
+              <legend>Privacidade</legend>
+              <label class="radio-option">
+                <input type="radio" name="privacy" value="Código da sala" checked />
+                <span>Código da sala</span>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="privacy" value="Pública" />
+                <span>Pública</span>
+              </label>
+            </fieldset>
+
+            <button type="submit" class="primary-button">Criar sala</button>
+            <button type="button" class="secondary-button" id="backToLoginButton">
+              Voltar
+            </button>
+          </form>
+        </div>
+      </section>
+
+      <section class="screen lobby-screen" id="lobbyScreen" aria-label="Sala de espera">
+        <div class="lobby-card">
+          <div class="lobby-header">
+            <div>
+              <p class="brand-kicker">Sala</p>
+              <h2 id="lobbyRoomName">Sala do Pântano</h2>
+            </div>
+            <button type="button" class="copy-button" id="copyRoomCodeButton">Copiar código</button>
+          </div>
+
+          <div class="room-code-panel">
+            <span>Código da sala</span>
+            <strong id="roomCodeDisplay">A7K9</strong>
+          </div>
+
+          <p class="waiting-text">Aguardando jogadores...</p>
+
+          <div class="players-list" id="playersList"></div>
+
+          <div class="lobby-actions">
+            <button type="button" class="secondary-button" id="selectCharacterButton">
+              Selecionar personagem
+            </button>
+            <button type="button" class="primary-button" id="startAdventureButton">
+              Iniciar aventura
+            </button>
+            <button type="button" class="secondary-button" id="lobbyBackButton">
+              Voltar
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen character-screen" id="characterScreen" aria-label="Seleção de personagem">
+        <div class="character-card">
+          <div class="brand-block compact-brand">
+            <p class="brand-kicker">Seleção</p>
+            <h2>Escolha seu personagem</h2>
+          </div>
+
+          <div class="character-list" id="characterList"></div>
+
+          <div class="selected-character-panel" id="selectedCharacterPanel">
+            <div class="selected-character-header">
+              <span>Personagem selecionado</span>
+            </div>
+            <div class="selected-character-details" id="selectedCharacterDetails">
+              <p>Nenhum personagem selecionado.</p>
+            </div>
+          </div>
+
+          <div class="character-actions">
+            <button type="button" class="primary-button" id="confirmCharacterButton" disabled>
+              Confirmar personagem
+            </button>
+            <button type="button" class="secondary-button" id="characterBackButton">
+              Voltar
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen adventure-screen" id="adventureScreen" aria-label="Tela principal do jogador">
+        <div class="adventure-card">
+          <header class="player-header">
+            <div class="player-avatar" id="playerAvatar">K</div>
+            <div class="player-summary">
+              <div class="player-name-row">
+                <h2 id="playerNameDisplay">Kael</h2>
+                <span class="level-badge" id="playerLevelDisplay">Nível 3</span>
+              </div>
+
+              <div class="stats-grid">
+                <div class="stat-box">
+                  <span>Vida</span>
+                  <strong id="playerLifeDisplay">28 / 32</strong>
+                  <div class="health-bar">
+                    <div class="health-bar-fill" id="playerHealthBar" role="progressbar" aria-label="Vida" aria-valuemin="0" aria-valuenow="28" aria-valuemax="32"></div>
+                  </div>
+                </div>
+                <div class="stat-box">
+                  <span>Energia</span>
+                  <strong id="playerEnergyDisplay">12 / 12</strong>
+                  <div class="health-bar">
+                    <div class="energy-bar-fill" id="playerEnergyBar" role="progressbar" aria-label="Energia" aria-valuemin="0" aria-valuenow="12" aria-valuemax="12"></div>
+                  </div>
+                </div>
+                <div class="stat-box">
+                  <span>Status</span>
+                  <strong id="playerStatusDisplay">Normal</strong>
+                </div>
+              </div>
+              <p class="character-state-message" id="characterStateMessage" aria-live="polite"></p>
+            </div>
+          </header>
+
+          <section class="story-panel">
+            <h3>Narrativa</h3>
+            <h4 id="narrativeTitle">Floresta Sombria</h4>
+            <p id="narrativeText">“Vocês entram na floresta e escutam algo se movendo entre as árvores.”</p>
+            <div class="scene-image" aria-label="Cena da floresta">
+              <span>Floresta sombria</span>
+            </div>
+          </section>
+
+          <section class="options-panel">
+            <h3>Opções</h3>
+            <div class="options-list" id="optionsList">
+              <button type="button" class="option-button" data-option="Seguir o som">
+                Seguir o som
+              </button>
+              <button type="button" class="option-button" data-option="Investigar ao redor">
+                Investigar ao redor
+              </button>
+              <button type="button" class="option-button" data-option="Voltar pelo caminho seguro">
+                Voltar pelo caminho seguro
+              </button>
+            </div>
+
+            <button type="button" class="primary-button" id="confirmVoteButton" disabled>
+              Confirmar escolha
+            </button>
+            <p class="choice-status" id="choiceStatus" aria-live="polite">Selecione uma opção.</p>
+          </section>
+
+          <section class="combat-panel hidden" id="playerCombatPanel" aria-label="Combate por turnos">
+            <h3>Combate</h3>
+            <p class="combat-round-line">Rodada <strong id="playerCombatRound">1</strong></p>
+            <p id="playerCombatTurn">Aguardando início do combate.</p>
+            <div class="combat-enemy-card" id="playerCombatEnemy">Nenhum inimigo.</div>
+            <div class="combat-actions" id="playerCombatActions">
+              <button type="button" class="primary-button" id="combatAttackButton" disabled>Atacar</button>
+              <button type="button" class="secondary-button" id="combatPassButton" disabled>Passar turno</button>
+            </div>
+            <p class="combat-feedback" id="playerCombatFeedback" aria-live="polite"></p>
+            <h4>Últimos acontecimentos</h4>
+            <ul class="combat-log" id="playerCombatLog"></ul>
+          </section>
+
+          <section class="secret-event-panel hidden" id="playerSecretEventPanel" aria-label="Evento secreto do jogador">
+            <h3>Evento secreto</h3>
+            <div class="secret-event-box">
+              <h4 id="playerSecretEventTitle">Mensagem confidencial</h4>
+              <p id="playerSecretEventText">Você recebeu uma mensagem privada.</p>
+              <p class="secret-note">Somente você vê isso.</p>
+              <div class="secret-option-list">
+                <button type="button" class="secret-option-button" id="secretOptionButton1">Opção 1</button>
+                <button type="button" class="secret-option-button" id="secretOptionButton2">Opção 2</button>
+              </div>
+              <p class="secret-choice-status" id="secretEventAnswerStatus">Aguardando sua resposta.</p>
+            </div>
+          </section>
+
+          <section class="dice-panel" id="playerDicePanel" aria-label="Teste de dado do jogador">
+            <h3>Teste de perícia</h3>
+            <div class="dice-request-box">
+              <p class="dice-request-label">Nome do teste</p>
+              <strong id="diceRequestTitle">Sem teste pendente</strong>
+              <output class="dice-number" id="playerDiceNumber" aria-label="Resultado do d20">?</output>
+              <p id="diceRequestDifficulty">Dificuldade —</p>
+              <p id="diceRequestBonus">Bônus —</p>
+              <button type="button" class="primary-button" id="playerRollDiceButton" disabled>
+                Rolar dado
+              </button>
+              <p class="dice-result-text" id="playerDiceResult" aria-live="polite">Aguardando mestre...</p>
+            </div>
+          </section>
+
+          <section class="inventory-panel">
+            <h3>Inventário</h3>
+            <div class="inventory-list" id="inventoryList"></div>
+            <div class="inventory-item-details hidden" id="inventoryItemDetails">
+              <h4 id="selectedItemName">Item</h4>
+              <p id="selectedItemMeta">Selecione um item.</p>
+              <button type="button" class="primary-button" id="useItemButton">Usar item</button>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section class="screen master-screen" id="masterScreen" aria-label="Painel do mestre">
+        <div class="master-card">
+          <header class="master-header">
+            <div>
+              <p class="brand-kicker">Mestre</p>
+              <h2>Painel do Mestre</h2>
+            </div>
+            <span class="master-room-code" id="masterRoomCodeDisplay">A7K9</span>
+          </header>
+
+          <div class="master-summary">
+            <div>
+              <span>Código da sala</span>
+              <strong id="masterRoomCode">A7K9</strong>
+            </div>
+            <div>
+              <span>Jogadores</span>
+              <strong id="masterPlayersCount">4</strong>
+            </div>
+          </div>
+
+          <p class="choice-status" id="masterSceneFeedback" aria-live="polite"></p>
+          <div class="master-actions">
+            <button type="button" class="primary-button" id="continueStoryButton">
+              Continuar história
+            </button>
+            <button type="button" class="secondary-button" id="rollDiceButton" aria-controls="masterDiceSection">
+              Pedir rolagem de dado
+            </button>
+            <button type="button" class="secondary-button" id="secretEventButton" aria-controls="secretEventForm" aria-expanded="false">
+              Enviar evento secreto
+            </button>
+            <button type="button" class="secondary-button" id="showAdventureMemoryButton" aria-controls="adventureMemoryPanel" aria-expanded="false">
+              Ver memória da aventura
+            </button>
+            <button type="button" class="danger-button" id="endAdventureButton">
+              Encerrar aventura
+            </button>
+          </div>
+
+          <section class="master-section">
+            <h3>Cena atual</h3>
+            <h4 id="masterNarrativeTitle">Floresta Sombria</h4>
+            <p id="masterNarrativeText">“Vocês entram na floresta e escutam algo se movendo entre as árvores.”</p>
+            <div class="scene-image" aria-label="Cena da floresta">
+              <span>Floresta sombria</span>
+            </div>
+          </section>
+
+          <details class="master-section combat-master-section">
+
+            <summary><h3>Combate</h3></summary>
+            <div class="combat-start-form" id="combatStartForm">
+              <label class="field">
+                <span>Nome do inimigo</span>
+                <input id="combatEnemyName" type="text" maxlength="60" placeholder="Lobo Sombrio" autocomplete="off" />
+              </label>
+              <label class="field">
+                <span>Vida do inimigo</span>
+                <input id="combatEnemyLife" type="number" min="1" max="999" step="1" value="20" />
+              </label>
+              <label class="field">
+                <span>Defesa do inimigo</span>
+                <input id="combatEnemyDefense" type="number" min="1" max="999" step="1" value="12" />
+              </label>
+              <button type="button" class="primary-button" id="startCombatButton">Iniciar combate</button>
+              <p class="combat-feedback" id="masterCombatFeedback" aria-live="polite"></p>
+            </div>
+            <div class="combat-master-state" id="masterCombatState">Sem combate ativo.</div>
+            <ul class="combat-log" id="masterCombatLog"></ul>
+          </details>
+
+          <section class="master-section">
+            <h3>Votação</h3>
+            <div class="vote-list" id="voteList"></div>
+          </section>
+
+          <details class="master-section" id="masterDiceSection">
+
+            <summary><h3>Dados</h3></summary>
+            <div class="dice-form" id="diceFormPanel">
+              <label class="field">
+                <span>Jogador</span>
+                <select id="dicePlayerSelect"></select>
+              </label>
+
+              <label class="field">
+                <span>Nome do teste</span>
+                <input id="diceTestName" type="text" placeholder="Percepção" autocomplete="off" />
+              </label>
+
+              <label class="field">
+                <span>Dificuldade</span>
+                <input id="diceDifficulty" type="number" min="1" max="30" value="12" />
+              </label>
+
+              <label class="field">
+                <span>Bônus</span>
+                <input id="diceBonus" type="number" value="2" />
+              </label>
+
+              <button type="button" class="primary-button" id="sendDiceTestButton">
+                Enviar teste
+              </button>
+
+              <div class="dice-result-box" id="masterDiceResult" aria-live="polite">
+                Nenhum teste enviado ainda.
+              </div>
+            </div>
+          </details>
+
+          <section class="master-section">
+            <h3>Jogadores</h3>
+            <div class="master-player-list" id="masterPlayerList"></div>
+            <div class="master-player-detail hidden" id="masterPlayerDetail"></div>
+          </section>
+
+          <details class="master-section">
+
+            <summary><h3>Inventário / vida</h3></summary>
+            <div class="health-control-form">
+              <label class="field">
+                <span>Jogador</span>
+                <select id="healthTargetSelect"></select>
+              </label>
+              <label class="field">
+                <span>Quantidade (1–999)</span>
+                <input id="healthAmountInput" type="number" min="1" max="999" step="1" value="5" />
+              </label>
+              <div class="health-control-actions">
+                <button type="button" class="danger-button" id="applyDamageButton">Aplicar dano</button>
+                <button type="button" class="success-button" id="healCharacterButton">Curar</button>
+                <button type="button" class="danger-button" id="declareDeadButton" disabled>Declarar morto</button>
+              </div>
+              <p class="health-action-feedback" id="healthActionFeedback" aria-live="polite"></p>
+            </div>
+          </details>
+
+          <details class="master-section">
+
+            <summary><h3>Distribuir itens</h3></summary>
+            <div class="give-item-form">
+              <label class="field">
+                <span>Jogador</span>
+                <select id="masterTargetItemSelect"></select>
+              </label>
+
+              <label class="field">
+                <span>Item</span>
+                <select id="masterItemSelect">
+                  <option value="pocao-cura">Poção de cura</option>
+                  <option value="chave-antiga">Chave antiga</option>
+                  <option value="mapa-rasgado">Mapa rasgado</option>
+                </select>
+              </label>
+
+              <label class="field">
+                <span>Quantidade</span>
+                <input id="masterItemQuantity" type="number" min="1" max="10" value="1" />
+              </label>
+
+              <button type="button" class="primary-button" id="giveItemButton">Dar item</button>
+            </div>
+          </details>
+
+
+          <section class="secret-event-form hidden" id="adventureMemoryPanel" aria-label="Memória da aventura">
+            <h3>Memória da aventura</h3>
+            <div class="memory-box">
+              <p><strong>Resumo:</strong> <span id="memorySummary">Sem memória registrada.</span></p>
+              <p><strong>Local atual:</strong> <span id="memoryLocalAtual">-</span></p>
+              <p><strong>Objetivo atual:</strong> <span id="memoryObjetivoAtual">-</span></p>
+              <p><strong>Acontecimentos importantes:</strong> <span id="memoryAcontecimentos">-</span></p>
+              <p><strong>NPCs conhecidos:</strong> <span id="memoryNpcs">-</span></p>
+              <p><strong>Descobertas:</strong> <span id="memoryDescobertas">-</span></p>
+            </div>
+          </section>
+
+          <section class="secret-event-form hidden" id="secretEventForm" aria-label="Formulário de evento secreto">
+            <h3>Evento secreto</h3>
+            <label class="field">
+              <span>Jogador</span>
+              <select id="secretEventTarget"></select>
+            </label>
+
+            <label class="field">
+              <span>Título</span>
+              <input id="secretEventTitle" type="text" placeholder="Algo se move nas sombras" autocomplete="off" />
+            </label>
+
+            <label class="field">
+              <span>Texto</span>
+              <textarea id="secretEventText" rows="3" placeholder="Você percebe um movimento estranho..."></textarea>
+            </label>
+
+            <label class="field">
+              <span>Opção 1</span>
+              <input id="secretEventOption1" type="text" placeholder="Observar em silêncio" autocomplete="off" />
+            </label>
+
+            <label class="field">
+              <span>Opção 2</span>
+              <input id="secretEventOption2" type="text" placeholder="Se aproximar" autocomplete="off" />
+            </label>
+
+            <button type="button" class="primary-button" id="sendSecretEventButton">
+              Enviar evento
+            </button>
+          </section>
+
+          <details class="master-section">
+
+            <summary><h3>Eventos secretos</h3></summary>
+            <div class="secret-response-box" id="masterSecretResponse">
+              Nenhuma resposta recebida ainda.
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section class="screen final-screen" id="finalScreen" aria-label="Resumo final da aventura">
+        <div class="final-card">
+          <header class="final-header">
+            <p class="brand-kicker">Crônicas da Lua</p>
+            <h1>Fim da Aventura</h1>
+            <p class="final-room-line"><strong id="finalRoomName">Sala</strong> • <span id="finalDuration">0min</span></p>
+          </header>
+
+          <section class="final-section">
+            <h2>Resumo final</h2>
+            <p id="finalSummaryText" aria-live="polite">Preparando o epílogo...</p>
+          </section>
+
+          <section class="final-section">
+            <h2>Sobreviventes</h2>
+            <div class="final-character-list" id="finalSurvivorsList"></div>
+          </section>
+
+          <section class="final-section">
+            <h2>Personagens mortos</h2>
+            <div class="final-character-list" id="finalDeadList"></div>
+          </section>
+
+          <section class="final-section">
+            <h2>Momentos importantes</h2>
+            <ul class="final-moments-list" id="finalMomentsList"></ul>
+          </section>
+
+          <section class="final-section">
+            <h2>Estatísticas</h2>
+            <div class="final-stat-grid">
+              <div class="final-stat"><span>Cenas jogadas</span><strong id="finalScenesCount">0</strong></div>
+              <div class="final-stat"><span>Decisões</span><strong id="finalDecisionsCount">0</strong></div>
+              <div class="final-stat"><span>Testes de dado</span><strong id="finalDiceCount">0</strong></div>
+              <div class="final-stat"><span>Sucessos</span><strong id="finalSuccessCount">0</strong></div>
+              <div class="final-stat"><span>Falhas</span><strong id="finalFailureCount">0</strong></div>
+              <div class="final-stat"><span>Combates</span><strong id="finalCombatCount">0</strong></div>
+            </div>
+          </section>
+
+          <button type="button" class="primary-button" id="backToMenuButton">Voltar ao menu</button>
+        </div>
+      </section>
+    </main>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
